@@ -1,0 +1,15 @@
+[build]
+  publish = "dist"
+  command = "pnpm install --frozen-lockfile && pnpm build"
+
+# SPA fallback so React Router works on refresh
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# simple health check
+[[redirects]]
+  from = "/health"
+  to = "/health.html"
+  status = 200

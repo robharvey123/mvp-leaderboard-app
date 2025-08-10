@@ -1,0 +1,22 @@
+# Node / React / Vite
+node_modules/
+dist/
+build/
+.vite/
+.cache/
+coverage/
+
+# Env & OS
+.env
+.env.*
+.DS_Store
+
+# Logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Editors
+.vscode/
+.idea/
+*.swp
