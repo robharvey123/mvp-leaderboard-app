@@ -1,0 +1,207 @@
+classDiagram
+    class User {
+        +String userId
+        +String email
+        +String name
+        +String passwordHash
+        +String role
+        +String profileImageUrl
+        +Date createdAt
+        +Date lastLogin
+        +authenticate(email, password): Promise~AuthResult~
+        +updateProfile(profileData): Promise~User~
+    }
+    
+    class Player {
+        +String playerId
+        +String userId
+        +String firstName
+        +String lastName
+        +Date dateOfBirth
+        +String profileImageUrl
+        +Boolean isActive
+        +String primaryRole
+        +getFullStats(): Promise~PlayerStats~
+        +getCurrentSeasonStats(seasonId): Promise~PlayerSeasonStats~
+    }
+    
+    class Season {
+        +String seasonId
+        +String name
+        +Date startDate
+        +Date endDate
+        +Boolean isActive
+        +getMatches(): Promise~Match[]~
+        +getLeaderboard(): Promise~MVPLeaderboard~
+    }
+    
+    class Match {
+        +String matchId
+        +String seasonId
+        +Date matchDate
+        +String opponent
+        +String venue
+        +String result
+        +Boolean isComplete
+        +createMatch(): Promise~Match~
+        +updateResult(result): Promise~Match~
+        +getFullScorecard(): Promise~MatchScorecard~
+    }
+    
+    class BattingPerformance {
+        +String performanceId
+        +String matchId
+        +String playerId
+        +Number runsScored
+        +Number ballsFaced
+        +Number fours
+        +Number sixes
+        +String dismissalType
+        +String bowler
+        +Number mvpPoints
+        +calculateMVPPoints(): Number
+    }
+    
+    class BowlingPerformance {
+        +String performanceId
+        +String matchId
+        +String playerId
+        +Number overs
+        +Number maidens
+        +Number runsConceded
+        +Number wickets
+        +Number mvpPoints
+        +calculateMVPPoints(): Number
+    }
+    
+    class FieldingPerformance {
+        +String performanceId
+        +String matchId
+        +String playerId
+        +Number catches
+        +Number stumpings
+        +Number directRunOuts
+        +Number assistedRunOuts
+        +Number droppedCatches
+        +Number mvpPoints
+        +calculateMVPPoints(): Number
+    }
+    
+    class MVPLeaderboard {
+        +String leaderboardId
+        +String seasonId
+        +Date lastUpdated
+        +generateLeaderboard(): Promise~MVPLeaderboard~
+        +filterByDate(startDate, endDate): Promise~MVPLeaderboard~
+        +filterByMatch(matchId): Promise~MVPLeaderboard~
+        +filterByPlayer(playerId): Promise~MVPLeaderboard~
+        +exportToCSV(): Promise~string~
+    }
+    
+    class PlayerMVPEntry {
+        +String entryId
+        +String leaderboardId
+        +String playerId
+        +Number totalMVPPoints
+        +Number battingPoints
+        +Number bowlingPoints
+        +Number fieldingPoints
+        +Number teamPoints
+        +Number specialPoints
+        +calculateBreakdown(): PointsBreakdown
+    }
+    
+    class SpecialDesignation {
+        +String designationId
+        +String matchId
+        +String playerId
+        +String designationType
+        +Number pointsImpact
+    }
+    
+    class MVPCalculator {
+        +calculateBattingPoints(batting: BattingPerformance): Number
+        +calculateBowlingPoints(bowling: BowlingPerformance): Number
+        +calculateFieldingPoints(fielding: FieldingPerformance): Number
+        +calculateTeamPoints(match: Match, playerId): Number
+        +calculateSpecialPoints(designations: SpecialDesignation[]): Number
+        +calculateTotal(playerId, matchId): Promise~Number~
+        +recalculateLeaderboard(seasonId): Promise~MVPLeaderboard~
+    }
+    
+    class AuthService {
+        +registerUser(email, password, name): Promise~User~
+        +login(email, password): Promise~AuthResult~
+        +logout(): Promise~void~
+        +resetPassword(email): Promise~void~
+        +verifyToken(token): Promise~boolean~
+        +updateUserRole(userId, role): Promise~User~
+    }
+    
+    class MatchService {
+        +createMatch(matchData): Promise~Match~
+        +updateMatch(matchId, matchData): Promise~Match~
+        +getMatchById(matchId): Promise~Match~
+        +getMatchesBySeasonId(seasonId): Promise~Match[]~
+        +deleteMatch(matchId): Promise~void~
+        +markComplete(matchId, result): Promise~Match~
+        +importMatchData(file): Promise~ImportResult~
+    }
+    
+    class PerformanceService {
+        +addBattingPerformance(data): Promise~BattingPerformance~
+        +addBowlingPerformance(data): Promise~BowlingPerformance~
+        +addFieldingPerformance(data): Promise~FieldingPerformance~
+        +getPlayerMatchPerformance(matchId, playerId): Promise~PlayerPerformance~
+        +updatePerformance(performanceId, data): Promise~Performance~
+        +assignSpecialDesignation(matchId, playerId, type): Promise~SpecialDesignation~
+    }
+    
+    class LeaderboardService {
+        +getCurrentLeaderboard(): Promise~MVPLeaderboard~
+        +getLeaderboardBySeasonId(seasonId): Promise~MVPLeaderboard~
+        +getFilteredLeaderboard(filters): Promise~MVPLeaderboard~
+        +exportLeaderboardCSV(leaderboardId): Promise~string~
+    }
+    
+    class AdminService {
+        +getUsers(): Promise~User[]~
+        +updateUserRole(userId, role): Promise~User~
+        +overridePlayerStats(performanceId, stats): Promise~Performance~
+        +getAuditLogs(filters): Promise~AuditLog[]~
+        +manageSeasons(seasonData): Promise~Season~
+    }
+    
+    class CSVExportService {
+        +exportLeaderboard(leaderboardId): Promise~string~
+        +exportPlayerStats(playerId): Promise~string~
+        +exportMatchScorecard(matchId): Promise~string~
+    }
+
+    User "1" -- "0..1" Player
+    Player "1" -- "*" BattingPerformance
+    Player "1" -- "*" BowlingPerformance
+    Player "1" -- "*" FieldingPerformance
+    Player "1" -- "*" PlayerMVPEntry
+    Player "1" -- "*" SpecialDesignation
+    Season "1" -- "*" Match
+    Season "1" -- "*" MVPLeaderboard
+    Match "1" -- "*" BattingPerformance
+    Match "1" -- "*" BowlingPerformance
+    Match "1" -- "*" FieldingPerformance
+    Match "1" -- "*" SpecialDesignation
+    MVPLeaderboard "1" -- "*" PlayerMVPEntry
+    
+    MVPCalculator --> BattingPerformance: calculates points
+    MVPCalculator --> BowlingPerformance: calculates points
+    MVPCalculator --> FieldingPerformance: calculates points
+    MVPCalculator --> MVPLeaderboard: updates
+    
+    AuthService --> User: manages
+    MatchService --> Match: manages
+    PerformanceService --> BattingPerformance: manages
+    PerformanceService --> BowlingPerformance: manages
+    PerformanceService --> FieldingPerformance: manages
+    LeaderboardService --> MVPLeaderboard: manages
+    AdminService --> User: manages
+    CSVExportService --> MVPLeaderboard: exports

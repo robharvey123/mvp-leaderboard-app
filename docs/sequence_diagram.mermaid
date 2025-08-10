@@ -1,0 +1,124 @@
+sequenceDiagram
+    %% User Authentication Flow
+    participant Client as Client App
+    participant Auth as AuthService
+    participant Firebase as Firebase Auth
+    participant DB as Database
+    participant UserRepo as UserRepository
+
+    %% Authentication Flow
+    Client->>Auth: login(email, password)
+    Auth->>Firebase: signInWithEmailAndPassword()
+    Firebase-->>Auth: userCredential
+    Auth->>UserRepo: findUserByEmail()
+    UserRepo->>DB: query
+    DB-->>UserRepo: userData
+    UserRepo-->>Auth: user object
+    Auth->>Auth: createJWT(user)
+    Auth-->>Client: {user, token}
+
+    %% Match Creation and Performance Entry Flow
+    participant Admin as Admin Client
+    participant MatchCtrl as MatchController
+    participant MatchSvc as MatchService
+    participant PerfCtrl as PerformanceController
+    participant PerfSvc as PerformanceService
+    participant MVP as MVPCalculator
+
+    Admin->>MatchCtrl: POST /api/matches (matchData)
+    MatchCtrl->>Auth: verifyToken()
+    Auth-->>MatchCtrl: isAuthorized
+    MatchCtrl->>MatchSvc: createMatch(matchData)
+    MatchSvc->>DB: save(match)
+    DB-->>MatchSvc: savedMatch
+    MatchSvc-->>MatchCtrl: match
+    MatchCtrl-->>Admin: 201 Created (match)
+    
+    Admin->>PerfCtrl: POST /api/performances/batting
+    PerfCtrl->>Auth: verifyToken()
+    Auth-->>PerfCtrl: isAuthorized
+    PerfCtrl->>PerfSvc: addBattingPerformance(data)
+    PerfSvc->>MVP: calculateBattingPoints(data)
+    MVP-->>PerfSvc: mvpPoints
+    PerfSvc->>DB: save(battingPerformance)
+    DB-->>PerfSvc: savedPerformance
+    PerfSvc-->>PerfCtrl: performance
+    PerfCtrl-->>Admin: 201 Created (performance)
+    
+    Note over Admin,DB: Similar flow for bowling and fielding performances
+    
+    %% Match Completion and Leaderboard Update
+    Admin->>MatchCtrl: PUT /api/matches/:id (mark complete)
+    MatchCtrl->>MatchSvc: markMatchComplete(id, result)
+    MatchSvc->>DB: updateMatch()
+    DB-->>MatchSvc: updatedMatch
+    MatchSvc->>MVP: recalculateLeaderboard(seasonId)
+    MVP->>DB: getMatchPerformances(matchId)
+    DB-->>MVP: performances
+    MVP->>MVP: calculateTotalMVPPoints()
+    MVP->>DB: updateLeaderboard()
+    DB-->>MVP: updatedLeaderboard
+    MVP-->>MatchSvc: leaderboard
+    MatchSvc-->>MatchCtrl: updatedMatch
+    MatchCtrl-->>Admin: 200 OK (updatedMatch)
+
+    %% Leaderboard Generation and Display Flow
+    participant User as User Client
+    participant LeadCtrl as LeaderboardController
+    participant LeadSvc as LeaderboardService
+    
+    User->>LeadCtrl: GET /api/leaderboards/filter?seasonId=123
+    LeadCtrl->>LeadSvc: getFilteredLeaderboard(filters)
+    LeadSvc->>DB: getLeaderboardBySeasonId(seasonId)
+    alt Leaderboard exists and is current
+        DB-->>LeadSvc: leaderboard
+    else Leaderboard needs recalculation
+        DB-->>LeadSvc: null or outdated
+        LeadSvc->>MVP: recalculateLeaderboard(seasonId)
+        MVP->>DB: getAllPerformancesBySeasonId()
+        DB-->>MVP: allPerformances
+        MVP->>MVP: calculateMVPPointsForAll()
+        MVP->>DB: saveLeaderboard()
+        DB-->>MVP: savedLeaderboard
+        MVP-->>LeadSvc: updatedLeaderboard
+    end
+    LeadSvc->>LeadSvc: applyFilters(leaderboard, filters)
+    LeadSvc-->>LeadCtrl: filteredLeaderboard
+    LeadCtrl-->>User: 200 OK (filteredLeaderboard)
+
+    %% Player Profile and Stats Retrieval
+    participant PlayerCtrl as PlayerController
+    participant PlayerSvc as PlayerService
+
+    User->>PlayerCtrl: GET /api/players/:id
+    PlayerCtrl->>PlayerSvc: getPlayerById(id)
+    PlayerSvc->>DB: findPlayerById(id)
+    DB-->>PlayerSvc: player
+    PlayerSvc-->>PlayerCtrl: player
+    PlayerCtrl-->>User: 200 OK (player)
+    
+    User->>PlayerCtrl: GET /api/players/:id/stats
+    PlayerCtrl->>PerfSvc: getPlayerCareerStats(id)
+    PerfSvc->>DB: getBattingPerformances(playerId)
+    DB-->>PerfSvc: battingPerformances
+    PerfSvc->>DB: getBowlingPerformances(playerId)
+    DB-->>PerfSvc: bowlingPerformances
+    PerfSvc->>DB: getFieldingPerformances(playerId)
+    DB-->>PerfSvc: fieldingPerformances
+    PerfSvc->>PerfSvc: aggregateStats()
+    PerfSvc-->>PlayerCtrl: playerStats
+    PlayerCtrl-->>User: 200 OK (playerStats)
+
+    %% CSV Export Flow
+    participant ExportSvc as CSVExportService
+    
+    Admin->>LeadCtrl: GET /api/leaderboards/export?seasonId=123
+    LeadCtrl->>Auth: verifyToken()
+    Auth-->>LeadCtrl: isAuthorized
+    LeadCtrl->>LeadSvc: getLeaderboardBySeasonId(seasonId)
+    LeadSvc->>DB: findLeaderboardBySeasonId()
+    DB-->>LeadSvc: leaderboard
+    LeadSvc-->>LeadCtrl: leaderboard
+    LeadCtrl->>ExportSvc: generateCSV(leaderboard)
+    ExportSvc-->>LeadCtrl: csvData
+    LeadCtrl-->>Admin: 200 OK (csvData)
