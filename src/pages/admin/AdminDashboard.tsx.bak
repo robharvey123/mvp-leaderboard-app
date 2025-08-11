@@ -1,0 +1,117 @@
+import SupabaseStatus from "@/components/SupabaseStatus";
+import { Link } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import StorageSettingsPanel from '@/components/admin/StorageSettingsPanel';
+
+export default function AdminDashboard() {
+  return (
+    <div className="container mx-auto py-6">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>>
+<div className="mt-2">
+  <SupabaseStatus />
+ </div>
+
+
+      <Tabs defaultValue="overview">
+        <TabsList className="mb-4">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="players">Players</TabsTrigger>
+          <TabsTrigger value="matches">Matches</TabsTrigger>
+          <TabsTrigger value="settings">Settings</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="overview">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Players</CardTitle>
+                <CardDescription>Manage player profiles</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">Add, edit, or remove player profiles.</p>
+                <Link to="/admin/players">
+                  <Button>Manage Players</Button>
+                </Link>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Matches</CardTitle>
+                <CardDescription>Manage match records</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">Add, edit, or remove matches and performances.</p>
+                <Link to="/admin/matches">
+                  <Button>Manage Matches</Button>
+                </Link>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Settings</CardTitle>
+                <CardDescription>Application settings</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="mb-4">Configure application settings.</p>
+                <Button variant="outline" onClick={() => document.getElementById('settings-tab')?.click()}>
+                  View Settings
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="players">
+          <Card>
+            <CardHeader>
+              <CardTitle>Player Management</CardTitle>
+              <CardDescription>Add, edit, or remove players</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Player management interface will be displayed when connected to data service.
+              </p>
+              <Link to="/admin/players">
+                <Button>Go to Player Management</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="matches">
+          <Card>
+            <CardHeader>
+              <CardTitle>Match Management</CardTitle>
+              <CardDescription>Add, edit, or remove matches</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4">
+                Match management interface will be displayed when connected to data service.
+              </p>
+              <Link to="/admin/matches">
+                <Button>Go to Match Management</Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="settings" id="settings-tab">
+          <Card>
+            <CardHeader>
+              <CardTitle>Storage Settings</CardTitle>
+              <CardDescription>Configure data storage options</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <StorageSettingsPanel />
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
