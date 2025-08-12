@@ -12,6 +12,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import MainLayout from './components/layouts/MainLayout';
 import AuthLayout from './components/layouts/AuthLayout';
+import ImportCsv from "./pages/ImportCsv";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<MainLayout />}>
                   <Route index element={<HomePage />} />
+                  <Route path="import-csv" element={<ImportCsv />} />
                   <Route path="leaderboard" element={<LeaderboardPage />} />
                   <Route path="player/:playerId" element={<PlayerProfilePage />} />
                   <Route path="admin" element={<AdminDashboard />} />
