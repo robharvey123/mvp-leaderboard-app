@@ -1,0 +1,1 @@
+-- SQL to create points_config and match_summary tables

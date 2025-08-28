@@ -1,48 +1,18 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ExclamationTriangleIcon } from '@radix-ui/react-icons';
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 
-interface ChartCardProps {
-  title: string;
-  description?: string;
-  children: ReactNode;
-  isLoading?: boolean;
-  error?: string | null;
-  className?: string;
-}
-
-/**
- * A reusable card component for displaying charts with consistent styling
- */
-export function ChartCard({
-  title,
-  description,
-  children,
-  isLoading = false,
-  error = null,
-  className = '',
-}: ChartCardProps) {
+export default function ChartCard({
+  title, subtitle, children, right,
+}: { title: string; subtitle?: string; children: ReactNode; right?: ReactNode }) {
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
-      <CardContent>
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-        ) : error ? (
-          <Alert variant="destructive">
-            <ExclamationTriangleIcon className="h-4 w-4" />
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        ) : (
-          children
-        )}
-      </CardContent>
-    </Card>
+    <div className="rounded-2xl border bg-white dark:bg-neutral-900 p-4">
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h3 className="text-base font-semibold">{title}</h3>
+          {subtitle && <p className="text-xs text-neutral-500">{subtitle}</p>}
+        </div>
+        {right}
+      </div>
+      <div className="h-64 md:h-72">{children}</div>
+    </div>
   );
 }

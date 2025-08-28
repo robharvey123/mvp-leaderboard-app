@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router-dom';
-import { useAuth } from '@/contexts/auth-context';
+import { useAuth } from '@/context/auth-context';
 import MainHeader from '@/components/common/MainHeader';
 import MainFooter from '@/components/common/MainFooter';
 

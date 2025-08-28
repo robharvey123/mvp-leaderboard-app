@@ -1,0 +1,2 @@
+[functions.ingest-scorecard]
+verify_jwt = false

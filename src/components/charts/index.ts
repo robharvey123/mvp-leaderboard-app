@@ -1,6 +1,5 @@
-export * from './ChartCard';
-export * from './BattingPointsChart';
-export * from './BattingRunsChart';
-export * from './BowlingWicketsChart';
-export * from './MVPPointsDistributionChart';
-export * from './PlayerPerformanceChart';
+export { default as AreaBasic } from "./AreaBasic";
+export { default as BarBasic } from "./BarBasic";
+export { default as LineBasic } from "./LineBasic";
+export * from "./formatters";
+export * from "./palette";

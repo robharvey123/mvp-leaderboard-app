@@ -1,0 +1,38 @@
+:root {
+  /* Brand palette in RGB (so we can use rgb(var(--brand-600))) */
+  --brand-50:  245 249 255;
+  --brand-100: 225 239 255;
+  --brand-200: 199 227 255;
+  --brand-300: 163 208 255;
+  --brand-400: 99  176 255;
+  --brand-500: 59  147 255;
+  --brand-600: 37  117 230;
+  --brand-700: 29  95  194;
+  --brand-800: 23  74  155;
+  --brand-900: 17  57  122;
+
+  --card: #ffffff;
+  --text-strong: #111827;
+  --text-soft: #6b7280;
+  --border: #e5e7eb;
+
+  --ring: 59 147 255; /* focus ring colour (brand-500) */
+}
+
+/* Utility classes used around the app */
+.bg-card { background: var(--card); }
+.text-text-soft { color: var(--text-soft); }
+.text-text-strong { color: var(--text-strong); }
+.border-brand-100 { border-color: rgb(var(--brand-100)); }
+.bg-brand-50 { background: rgb(var(--brand-50)); }
+.bg-brand-100 { background: rgb(var(--brand-100)); }
+.text-brand-800 { color: rgb(var(--brand-800)); }
+.bg-brand-600 { background: rgb(var(--brand-600)); }
+.bg-brand-700 { background: rgb(var(--brand-700)); }
+
+/* Focus styles (keyboard accessibility) */
+*[data-focusable], a, button, input, select, textarea { outline: none; }
+*:focus-visible {
+  box-shadow: 0 0 0 3px rgba(var(--ring), .45);
+  border-radius: .75rem;
+}

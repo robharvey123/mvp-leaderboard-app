@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "entry": ["src/main.tsx"],
+  "project": ["src/**/*.{ts,tsx}"],
+  "ignore": [
+    "src/vite-env.d.ts",
+    "dist/**"
+  ],
+  "ignoreExports": [
+    // files that are imported dynamically or re-exported on purpose
+    "src/components/charts/Primitives.tsx",
+    "src/components/charts/index.ts"
+  ]
+}

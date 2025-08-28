@@ -5,9 +5,9 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle, Cloud, Database, Check, Server } from 'lucide-react';
-import { useStorage } from '@/contexts/storage-context';
+import { useStorage } from '@/context/storage-context';
 import { StorageBackend } from '@/lib/data-service';
-import { isSupabaseConfigured } from '@/lib/supabase-client';
+import { isSupabaseConfigured } from '@/lib/supabaseClient';
 
 export default function StorageSettingsPanel() {
   const { currentBackend, switchToBackend, isLoading, error } = useStorage();
