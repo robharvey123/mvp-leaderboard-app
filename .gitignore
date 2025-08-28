@@ -10,3 +10,6 @@ dist/
 .env
 .env.*
 .DS_Store
+.env
+.env.*.local
+*.local
